@@ -6,8 +6,11 @@
 ipip() {
     ip=$1
 
-    ipip_html=$(curl https://www.ipip.net/ip/$ip.html -s)
-    #ipip_html=$(cat 1.html)
+    if [ -n "$ip" ]; then
+        ipip_html=$(curl https://www.ipip.net/ip/$ip.html -s)
+    else
+        ipip_html=$(curl https://www.ipip.net/ip.html -s)
+    fi
 
     # geo location
     geo=$(echo -n "$ipip_html" | grep 'style="display: inline-block;text-align: center;width: 720px;float: left;line-height: 46px;height: 46px;"' | sed 's|<span style="display: inline-block;text-align: center;width: 720px;float: left;line-height: 46px;height: 46px;">||g' | sed 's|</span>||g' | tr -d '[:space:]')
@@ -19,6 +22,7 @@ ipip() {
     is_idc=$(echo -n "$ipip_html" | grep '<span style="display: inline-block;text-align: center;width: 720px;float: left;line-height: 46px;">' | grep 'IDC')
     is_anycast=$(echo -n "$ipip_html" | grep 'ANYCAST')
 
+    # ASN
     asn=$(echo -n "$ipip_html" | grep "https://whois.ipip.net" -m3 | sed 's|.*https://whois.ipip.net||g' | sed 's|</a> </td>||g' | sed 's|.*>||g' | sed -n '1p' | tr -d '[:space:]')
     cidr=$(echo -n "$ipip_html" | grep "https://whois.ipip.net" -m3 | sed 's|.*https://whois.ipip.net||g' | sed 's|</a> </td>||g' | sed 's|.*>||g' | sed -n '2p' | tr -d '[:space:]')
     org=$(echo -n "$ipip_html" | grep "https://whois.ipip.net" -m3 | sed 's|.*https://whois.ipip.net||g' | sed 's|</a> </td>||g' | sed 's|.*>||g' | sed -n '3p' | tr -d '[:space:]')
