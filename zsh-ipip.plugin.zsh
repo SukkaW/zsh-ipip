@@ -4,13 +4,16 @@
 # -------------------------------------------------
 
 ipip() {
-    ip=$1
 
-    if [ -n "$ip" ]; then
-        ipip_html=$(curl https://www.ipip.net/ip/$ip.html -s)
+
+    if [ -n "$1" ]; then
+        ipip_html=$(curl https://www.ipip.net/ip/$1.html -s)
     else
         ipip_html=$(curl https://www.ipip.net/ip.html -s)
     fi
+
+    # ip
+    ip=$(echo -n "$ipip_html" | grep '/ip/' | tr -d '[:space:]' | sed 's|<a style="background: none;color: #0A246A;width: auto;" href="||g' | sed 's|</a></span>||g' | sed 's|.*>||g' | tr -d '[:space:]')
 
     # geo location
     geo=$(echo -n "$ipip_html" | grep 'style="display: inline-block;text-align: center;width: 720px;float: left;line-height: 46px;height: 46px;"' | sed 's|<span style="display: inline-block;text-align: center;width: 720px;float: left;line-height: 46px;height: 46px;">||g' | sed 's|</span>||g' | tr -d '[:space:]')
